@@ -20,7 +20,11 @@ class AccountTypeResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static ?string $recordTitleAttribute = 'AccountType';
+    protected static ?string $recordTitleAttribute = 'Tipos de conta';
+
+    protected static ?string $navigationLabel = 'Tipos de conta'; // para alterar o nome na navegação
+
+    protected static ?string $modelLabel = 'Tipo de conta'; // para alterar o nome do modelo
 
     public static function form(Schema $schema): Schema
     {

@@ -12,8 +12,12 @@ class PaymentMethodForm
         return $schema
             ->components([
                 TextInput::make('name')
+                    ->label('Nome')
+                    ->autofocus()
+                    ->unique()
                     ->required(),
-                TextInput::make('description'),
+                TextInput::make('description')
+                    ->label('Descrição'),
             ]);
     }
 }

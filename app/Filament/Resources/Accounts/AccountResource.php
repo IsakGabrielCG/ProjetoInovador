@@ -22,6 +22,10 @@ class AccountResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'Account';
 
+    protected static ?string $modelLabel = 'Conta';
+
+    protected static ?string $navigationLabel = 'Contas';
+
     public static function form(Schema $schema): Schema
     {
         return AccountForm::configure($schema);

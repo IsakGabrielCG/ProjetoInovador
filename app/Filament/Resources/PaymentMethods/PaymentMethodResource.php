@@ -22,6 +22,10 @@ class PaymentMethodResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'PaymentMethod';
 
+    protected static ?string $navigationLabel = 'Métodos de pagamento'; // para alterar o nome na navegação
+
+    protected static ?string $modelLabel = 'Método de pagamento'; // para alterar o nome do modelo
+
     public static function form(Schema $schema): Schema
     {
         return PaymentMethodForm::configure($schema);

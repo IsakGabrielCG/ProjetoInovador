@@ -12,10 +12,17 @@ class UnitForm
         return $schema
             ->components([
                 TextInput::make('name')
+                    ->label('Nome')
+                    ->autofocus()
+                    ->unique()
                     ->required(),
                 TextInput::make('cnpj')
+                    ->label('CNPJ')
+                    ->mask('99.999.999/9999-99')
+                    ->placeholder('00.000.000/0000-00')
                     ->required(),
-                TextInput::make('address'),
+                TextInput::make('address')
+                    ->label('Endereço'),
             ]);
     }
 }
