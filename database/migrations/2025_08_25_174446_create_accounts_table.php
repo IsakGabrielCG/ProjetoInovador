@@ -21,15 +21,14 @@ return new class extends Migration
             $table->enum('status', ['paga', 'em aberto'])->default('em aberto');
             $table->foreignId('unit_id')->constrained('units');
             $table->foreignId('account_type_id')->constrained('account_types');
-            $table->foreignId('payment_methods_id')->constrained('payment_methods')->nullable();
+            $table->foreignId('payment_methods_id')->nullable()->constrained('payment_methods');
             $table->date('payment_date')->nullable();
             $table->string('document_path')->nullable();
-            $table->decimal('interest_rate')->nullable();
-            $table->decimal('fine_amount')->nullable();
+            $table->float('interest_rate')->nullable();
+            $table->float('fine_amount')->nullable();
             $table->decimal('amount_paid')->nullable();
             $table->string('document_number')->nullable();
             $table->string('description')->nullable();
-            $table->timestamps();
         });
 
         Schema::enableForeignKeyConstraints();

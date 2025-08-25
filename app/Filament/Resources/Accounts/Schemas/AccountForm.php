@@ -20,7 +20,7 @@ class AccountForm
                 TextInput::make('amount')
                     ->label('Valor')
                     ->required()
-                    ->numeric()
+                    ->reactive()
                     ->mask(RawJs::make(<<<'JS'
                         $input => {
                             let x = $input.replace(/\D/g, '');
@@ -29,7 +29,24 @@ class AccountForm
                             return parseInt(intPart).toLocaleString('pt-BR') + ',' + decimalPart;
                         }
                     JS))
-                    ->prefix('R$'),
+                    ->prefix('R$')
+                    ->reactive()
+                    ->dehydrateStateUsing(function ($state) {
+                        if ($state === null || $state === '') return null;
+
+                        $raw = str_replace(['.', ','], ['', '.'], $state); // "1.234,56" -> "1234.56"
+
+                        // opcional: inspeção rápida do que VAI para o banco
+                        // dd($raw);
+
+                        return $raw;
+                    })
+                    // ->afterStateUpdated(function ($state) {
+                    //     if ($state) {
+                    //         dd($state);
+                    //     }
+                    // })
+                    ,
                 DatePicker::make('due_date')
                     ->label('Data de Vencimento')
                     ->required(),
