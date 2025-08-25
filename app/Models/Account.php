@@ -36,7 +36,7 @@ class Account extends Model
 
     public function paymentMethod()
     {
-        return $this->belongsTo(PaymentMethod::class);
+         return $this->belongsTo(PaymentMethod::class, 'payment_methods_id');
     }
 
 }

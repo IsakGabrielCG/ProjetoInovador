@@ -19,43 +19,43 @@ class AccountsTable
                     ->searchable(),
                 TextColumn::make('amount')
                     ->label('Valor')
-                    ->numeric()
+                    ->money('BRL')
                     ->sortable(),
                 TextColumn::make('due_date')
                     ->label('Data de Vencimento')
-                    ->date()
+                    ->date('d/m/Y')
                     ->sortable(),
                 TextColumn::make('status')
                     ->label('Status'),
-                TextColumn::make('unit_id')
+                TextColumn::make('unit.name')
                     ->label('Unidade')
-                    ->numeric()
                     ->sortable(),
-                TextColumn::make('account_type_id')
+                TextColumn::make('accountType.name')
                     ->label('Tipo de Conta')
-                    ->numeric()
                     ->sortable(),
-                TextColumn::make('payment_methods_id')
+                TextColumn::make('paymentMethod.name') //
                     ->label('Método de Pagamento')
-                    ->numeric()
                     ->sortable(),
                 TextColumn::make('payment_date')
                     ->label('Data de Pagamento')
-                    ->date()
-                    ->sortable(),
+                    ->date('d/m/Y')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('interest_rate')
                     ->label('Taxa de Juros')
                     ->numeric()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    //->toggleable(isToggledHiddenByDefault: true)
+                    ,
                 TextColumn::make('fine_amount')
                     ->label('Valor da Multa')
                     ->numeric()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    //->toggleable(isToggledHiddenByDefault: true)
+                    ,
                 TextColumn::make('amount_paid')
                     ->label('Valor Pago')
-                    ->numeric()
+                    ->money('BRL')
                     ->sortable(),
                 TextColumn::make('document_number')
                     ->label('Número do Documento')
@@ -63,7 +63,8 @@ class AccountsTable
                 TextColumn::make('description')
                     ->label('Descrição')
                     ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    //->toggleable(isToggledHiddenByDefault: true)
+                    ,
             ])
             ->filters([
                 //

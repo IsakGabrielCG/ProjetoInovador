@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('cnpj');
             $table->string('address')->nullable();
+            $table->timestamps();
         });
     }
 

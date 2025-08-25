@@ -29,6 +29,7 @@ return new class extends Migration
             $table->decimal('amount_paid')->nullable();
             $table->string('document_number')->nullable();
             $table->string('description')->nullable();
+            $table->timestamps();
         });
 
         Schema::enableForeignKeyConstraints();

@@ -3,10 +3,18 @@
 namespace App\Filament\Resources\Accounts\Schemas;
 
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\ToggleButtons;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Support\RawJs;
+use App\Helpers\Financeiro;
+
 
 class AccountForm
 {
@@ -14,101 +22,147 @@ class AccountForm
     {
         return $schema
             ->components([
-                TextInput::make('name')
-                    ->label('Nome')
-                    ->required(),
-                TextInput::make('amount')
-                    ->label('Valor')
-                    ->required()
+                ToggleButtons::make('status')
+                    ->label('Status')
                     ->reactive()
-                    ->mask(RawJs::make(<<<'JS'
-                        $input => {
-                            let x = $input.replace(/\D/g, '');
-                            let intPart = x.slice(0, -2) || '0';
-                            let decimalPart = x.slice(-2);
-                            return parseInt(intPart).toLocaleString('pt-BR') + ',' + decimalPart;
-                        }
-                    JS))
-                    ->prefix('R$')
-                    ->reactive()
-                    ->dehydrateStateUsing(function ($state) {
-                        if ($state === null || $state === '') return null;
-
-                        $raw = str_replace(['.', ','], ['', '.'], $state); // "1.234,56" -> "1234.56"
-
-                        // opcional: inspeção rápida do que VAI para o banco
-                        // dd($raw);
-
-                        return $raw;
-                    })
-                    // ->afterStateUpdated(function ($state) {
-                    //     if ($state) {
-                    //         dd($state);
-                    //     }
-                    // })
-                    ,
-                DatePicker::make('due_date')
-                    ->label('Data de Vencimento')
-                    ->required(),
-                Select::make('status')
-                    ->options(['paga' => 'Paga', 'em aberto' => 'Em aberto'])
+                    ->inline() // fica lado a lado
+                    ->options([
+                        'paga' => 'Paga',
+                        'em aberto' => 'Em aberto',
+                    ])
+                    ->colors([
+                        'paga' => 'success',
+                        'em aberto' => 'warning',
+                    ])
+                    ->icons([
+                        'paga' => 'heroicon-o-check-circle',
+                        'em aberto' => 'heroicon-o-clock',
+                    ])
                     ->default('em aberto')
-                    ->required(),
+                    ->afterStateUpdated(function ($state, $set) {
+                        if ($state === 'em aberto') {
+                            // limpa os campos de pagamento
+                            $set('payment_methods_id', null);
+                            $set('payment_date', null);
+                            $set('amount_paid', null);
+                        }
+                    })
+                    ->columnSpanFull(),
+
                 Select::make('unit_id')
                     ->label('Unidade')
                     ->required()
                     ->relationship('unit', 'name'),
+
                 Select::make('account_type_id')
                     ->label('Tipo de Conta')
                     ->required()
                     ->relationship('accountType', 'name'),
-                Select::make('payment_methods_id')
-                    ->label('Método de Pagamento')
-                    ->relationship('paymentMethod', 'name'),
-                DatePicker::make('payment_date')
-                    ->label('Data de Pagamento'),
-                TextInput::make('document_path')
-                    ->label('Caminho do Documento'),
-                TextInput::make('interest_rate')
-                    ->label('Taxa de Juros')
-                    ->numeric()
-                    ->mask(RawJs::make(<<<'JS'
-                        $input => {
-                            let x = $input.replace(/\D/g, '');
-                            let intPart = x.slice(0, -2) || '0';
-                            let decimalPart = x.slice(-2);
-                            return parseInt(intPart).toLocaleString('pt-BR') + ',' + decimalPart;
-                        }
-                    JS))
-                    ->prefix('%'),
-                TextInput::make('fine_amount')
-                    ->label('Valor da Multa')
-                    ->numeric()
-                    ->mask(RawJs::make(<<<'JS'
-                        $input => {
-                            let x = $input.replace(/\D/g, '');
-                            let intPart = x.slice(0, -2) || '0';
-                            let decimalPart = x.slice(-2);
-                            return parseInt(intPart).toLocaleString('pt-BR') + ',' + decimalPart;
-                        }
-                    JS))
-                    ->prefix('R$'),
-                TextInput::make('amount_paid')
-                    ->label('Valor Pago')
-                    ->numeric()
-                    ->mask(RawJs::make(<<<'JS'
-                        $input => {
-                            let x = $input.replace(/\D/g, '');
-                            let intPart = x.slice(0, -2) || '0';
-                            let decimalPart = x.slice(-2);
-                            return parseInt(intPart).toLocaleString('pt-BR') + ',' + decimalPart;
-                        }
-                    JS))
-                    ->prefix('R$'),
+
+                TextInput::make('name')
+                    ->label('Nome')
+                    ->required(),
+
+                DatePicker::make('due_date')
+                    ->label('Data de Vencimento')
+                    ->displayFormat('d/m/Y')
+                    ->native(false)
+                    ->required(),
+
                 TextInput::make('document_number')
                     ->label('Número do Documento'),
+
                 TextInput::make('description')
                     ->label('Descrição'),
+
+
+
+
+                Grid::make()
+                    ->schema([
+                        TextInput::make('amount')
+                            ->label('Valor do Documento')
+                            ->required()
+                            ->reactive()
+                            ->mask(RawJs::make(<<<'JS'
+                                $input => {
+                                    let x = $input.replace(/\D/g, '');
+                                    let intPart = x.slice(0, -2) || '0';
+                                    let decimalPart = x.slice(-2);
+                                    return parseInt(intPart).toLocaleString('pt-BR') + ',' + decimalPart;
+                                }
+                            JS))
+                            ->prefix('R$')
+                            ->reactive()
+                            ->dehydrateStateUsing(fn ($state) => $state !== null && $state !== ''
+                                ? str_replace(['.', ','], ['', '.'], $state) // "1.234,56" -> "1234.56"
+                                : null
+                            )
+                            ->afterStateUpdated(fn (Set $set, Get $get) => $set('amount_paid', Financeiro::calcularValorPago($get))),
+                        TextInput::make('interest_rate')
+                            ->label('Taxa de Juros')
+                            ->formatStateUsing(fn ($state) => $state === null || $state === ''
+                                ? null
+                                : str_replace('.', ',', (string) $state)   // 1.5 -> "1,5"
+                            )
+                            // salva como número com ponto
+                            ->dehydrateStateUsing(fn ($state) => $state !== null && $state !== ''
+                                ? (string) str_replace(',', '.', $state)   // "1,5" -> "1.5"
+                                : null
+                            )
+                            ->rule('numeric')
+                            ->afterStateUpdated(fn ($set, $get) => $set('amount_paid', Financeiro::calcularValorPago($get)))
+                            ->prefix('%'),
+
+                        TextInput::make('fine_amount')
+                            ->label('Valor da Multa')
+                            ->formatStateUsing(fn ($state) => $state === null || $state === ''
+                                ? null
+                                : str_replace('.', ',', (string) $state)
+                            )
+                            ->dehydrateStateUsing(fn ($state) => $state !== null && $state !== ''
+                                ? (string) str_replace(',', '.', $state)
+                                : null
+                            )
+                            ->rule('numeric')
+                            ->afterStateUpdated(fn ($set, $get) => $set('amount_paid', Financeiro::calcularValorPago($get)))
+                            ->prefix('%'),
+                    ]),
+
+                FileUpload::make('document_path')
+                    ->label('Documento'),
+
+                Section::make('Informações de pagamento')
+                    ->schema([
+                        Select::make('payment_methods_id')
+                            ->label('Método de Pagamento')
+                            ->relationship('paymentMethod', 'name'),
+                        DatePicker::make('payment_date')
+                            ->displayFormat('d/m/Y')
+                            ->default(now())
+                            ->native(false)
+                            ->label('Data de Pagamento'),
+                        TextInput::make('amount_paid')
+                            ->label('Valor Pago')
+                            ->disabled()
+                            ->dehydrated(fn ($get) => $get('status') === 'paga')
+                            // mostra sempre formatado no form
+                            ->formatStateUsing(fn ($state) => $state === null || $state === ''
+                                ? null
+                                : number_format((float) str_replace(['.', ','], ['', '.'], $state), 2, ',', '.')
+                            )
+                            // salva no banco como número padrão
+                            ->dehydrateStateUsing(fn ($state) => $state !== null && $state !== ''
+                                ? str_replace(['.', ','], ['', '.'], $state)
+                                : null
+                            )
+                            ->prefix('%'),
+                        ])
+                        ->visible(fn ($get) => $get('status') === 'paga')
+                        ->collapsed(),
+
+
+
             ]);
     }
 }
