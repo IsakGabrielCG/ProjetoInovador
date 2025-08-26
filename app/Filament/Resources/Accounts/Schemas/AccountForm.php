@@ -83,7 +83,6 @@ class AccountForm
                         TextInput::make('amount')
                             ->label('Valor do Documento')
                             ->required()
-                            ->reactive()
                             ->mask(RawJs::make(<<<'JS'
                                 $input => {
                                     let x = $input.replace(/\D/g, '');
@@ -93,7 +92,7 @@ class AccountForm
                                 }
                             JS))
                             ->prefix('R$')
-                            ->reactive()
+                            //->reactive()
                             ->dehydrateStateUsing(fn ($state) => $state !== null && $state !== ''
                                 ? str_replace(['.', ','], ['', '.'], $state) // "1.234,56" -> "1234.56"
                                 : null
