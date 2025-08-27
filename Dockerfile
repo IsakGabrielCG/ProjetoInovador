@@ -24,4 +24,11 @@ RUN chmod -R 775 storage bootstrap/cache || true
 EXPOSE 10000
 
 # Ao subir o container: migra e inicia o servidor
-CMD php artisan migrate --force && php artisan serve --host 0.0.0.0 --port 10000
+CMD php artisan migrate --force \
+ && php artisan storage:link || true \
+ && php artisan filament:optimize \
+ && php artisan route:cache \
+ && php artisan config:cache \
+ && php artisan view:cache \
+ && php artisan serve --host 0.0.0.0 --port 10000
+
