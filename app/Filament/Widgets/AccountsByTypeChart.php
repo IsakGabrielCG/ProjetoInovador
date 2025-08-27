@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 
 class AccountsByTypeChart extends ChartWidget
 {
-    protected ?string $heading = 'Accounts By Type Chart';
+    protected ?string $heading = 'Gastos por Tipo';
 
     protected function getData(): array
     {
