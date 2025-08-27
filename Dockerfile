@@ -1,12 +1,12 @@
-# PHP 8.2 CLI
-FROM php:8.2-cli
+# PHP 8.3 CLI (compatível com openspout ^4.23)
+FROM php:8.3-cli
 
 # Dependências do sistema + SQLite + ICU (p/ intl) + ZIP
 RUN apt-get update \
  && apt-get install -y git unzip libzip-dev libicu-dev sqlite3 libsqlite3-dev \
  && docker-php-ext-install pdo pdo_sqlite zip intl
 
-# Composer
+# Composer (permitir rodar como root no build)
 ENV COMPOSER_ALLOW_SUPERUSER=1
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
@@ -20,7 +20,7 @@ RUN composer install --no-dev -o
 # Permissões (storage e cache)
 RUN chmod -R 775 storage bootstrap/cache || true
 
-# Porta que o artisan serve vai usar
+# Porta do servidor artisan
 EXPOSE 10000
 
 # Ao subir o container: migra e inicia o servidor
