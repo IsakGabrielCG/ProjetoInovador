@@ -13,15 +13,27 @@ class AccountTypeSeeder extends Seeder
      */
     public function run(): void
     {
-        $items = [
-            ['name' => 'Despesa', 'description' => 'Custos e contas a pagar'],
-            ['name' => 'Receita', 'description' => 'Entradas de dinheiro'],
+        $categorias = [
+            ['name' => 'Energia Elétrica', 'description' => 'Contas de luz'],
+            ['name' => 'Água',             'description' => 'Abastecimento'],
+            ['name' => 'Internet',         'description' => 'Conectividade'],
+            ['name' => 'Aluguel',          'description' => 'Locação de imóveis'],
+            ['name' => 'Salários',         'description' => 'Folha de pagamento'],
+            ['name' => 'Vendas de Serviços','description' => 'Receitas de serviços'],
+            ['name' => 'Manutenção',       'description' => null],
+            ['name' => 'Impostos',         'description' => null],
+            ['name' => 'Outros',           'description' => null],
         ];
 
-        foreach ($items as $i) {
+        foreach ($categorias as $c) {
             DB::table('account_types')->updateOrInsert(
-                ['name' => $i['name']],
-                ['name' => $i['name'], 'description' => $i['description'], 'updated_at' => now(), 'created_at' => now()],
+                ['name' => $c['name']],
+                [
+                    'name'        => $c['name'],
+                    'description' => $c['description'],
+                    'updated_at'  => now(),
+                    'created_at'  => now(),
+                ],
             );
         }
     }
