@@ -52,9 +52,5 @@ class User extends Authenticatable
     }
 
 
-    public function canAccessPanel(Panel $panel): bool
-    {
-        // TESTE DEFINITIVO: libera geral em todos os ambientes
-        return true;
-    }
+
 }
