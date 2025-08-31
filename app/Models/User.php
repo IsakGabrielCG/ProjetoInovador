@@ -53,12 +53,18 @@ class User extends Authenticatable
 
     public function canAccessPanel(Panel $panel): bool
     {
-        // local/testing: libera qualquer usuário (como já funciona aí)
+        // Botão de pânico via ENV (sÓ para testar no Render)
+        if (env('ALLOW_PANEL_ALL', false)) {
+            return true;
+        }
+
+        // Local e testes: libera
         if (app()->environment(['local', 'testing'])) {
             return true;
         }
 
-        // produção (Render): só admin no painel 'admin'
-        return $this->role === 'admin' && $panel->getId() === 'admin';
+        // Produção: só admins
+        return $this->role === 'admin';
+        // (tirei a checagem do ID do painel para evitar divergência)
     }
 }
