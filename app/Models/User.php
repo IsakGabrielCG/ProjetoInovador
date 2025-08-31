@@ -54,13 +54,7 @@ class User extends Authenticatable
 
     public function canAccessPanel(Panel $panel): bool
     {
-        Log::info('canAccessPanel', [
-            'env' => app()->environment(),
-            'email' => $this->email ?? null,
-            'role' => $this->role ?? null,
-            'panel' => $panel->getId(),
-        ]);
-
-        return true; // bypass temporário só pra testar no Render
+        // TESTE DEFINITIVO: libera geral em todos os ambientes
+        return true;
     }
 }
