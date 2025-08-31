@@ -19,7 +19,7 @@ class AdminUserSeeder extends Seeder
             [
                 'name' => 'Admin',
                 'password' => Hash::make('12345678'),
-                'role' => 'admin', // << AQUI
+                'role' => 'admin',
                 'email_verified_at' => now(),
             ],
         );
