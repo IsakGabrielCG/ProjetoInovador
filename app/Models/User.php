@@ -8,6 +8,7 @@ use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Log;
 
 class User extends Authenticatable
 {
@@ -53,18 +54,13 @@ class User extends Authenticatable
 
     public function canAccessPanel(Panel $panel): bool
     {
-        // Botão de pânico via ENV (sÓ para testar no Render)
-        if (env('ALLOW_PANEL_ALL', false)) {
-            return true;
-        }
+        Log::info('canAccessPanel', [
+            'env' => app()->environment(),
+            'email' => $this->email ?? null,
+            'role' => $this->role ?? null,
+            'panel' => $panel->getId(),
+        ]);
 
-        // Local e testes: libera
-        if (app()->environment(['local', 'testing'])) {
-            return true;
-        }
-
-        // Produção: só admins
-        return $this->role === 'admin';
-        // (tirei a checagem do ID do painel para evitar divergência)
+        return true; // bypass temporário só pra testar no Render
     }
 }
