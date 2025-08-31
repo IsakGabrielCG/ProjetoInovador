@@ -25,7 +25,7 @@ EXPOSE 10000
 
 # Ao subir o container: migra e inicia o servidor
 CMD php artisan migrate --force \
- && php artisan db:seed --class=AdminUserSeeder --force \
+ && php artisan db:seed --class=DemoSeeder --force \
  && php artisan storage:link || true \
  && php artisan filament:optimize \
  && php artisan route:cache \
