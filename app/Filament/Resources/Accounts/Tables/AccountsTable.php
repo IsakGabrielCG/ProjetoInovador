@@ -5,12 +5,17 @@ namespace App\Filament\Resources\Accounts\Tables;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
+use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Support\Carbon;
 
 class AccountsTable
@@ -57,7 +62,13 @@ class AccountsTable
                         return 'warning'; // em aberto e ainda dentro do prazo
                     })
                     ->tooltip(function ($record) {
-                        if (! $record->due_date) return null;
+                        if ($record->status === 'paga') {
+                            return 'Paga';
+                        }
+
+                        if (! $record->due_date) {
+                            return null;
+                        }
 
                         $today = Carbon::today(config('app.timezone', 'America/Sao_Paulo'));
                         $due   = Carbon::parse($record->due_date)->startOfDay();
@@ -132,19 +143,41 @@ class AccountsTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('status')
+                    ->options([
+                        'em aberto' => 'Em Aberto',
+                        'paga'      => 'Paga',
+                        'cancelada' => 'Cancelada',
+                    ])
+                    ->label('Status'),
+
+                SelectFilter::make('unit_id')
+                    ->relationship('unit', 'name')
+                    ->label('Unidade'),
+
+                Filter::make('due_date_range')
+                    ->label('Período de Vencimento')
+                    ->form([
+                        DatePicker::make('from')->label('De'),
+                        DatePicker::make('until')->label('Até'),
+                    ])
+                    ->query(function (\Illuminate\Database\Eloquent\Builder $query, array $data) {
+                        return $query
+                            ->when($data['from'], fn ($q) => $q->whereDate('due_date', '>=', $data['from']))
+                            ->when($data['until'], fn ($q) => $q->whereDate('due_date', '<=', $data['until']));
+                    }),
             ])
             ->recordActions([
                 ActionGroup::make([
-                    Action::make('view'),
-                    Action::make('edit'),
-                    Action::make('delete'),
+                    EditAction::make(),
+                    // DeleteAction::make(), não vai ser usado por enquanto
+                    ViewAction::make(),
                 ])
             ])
             ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
+                // BulkActionGroup::make([
+                //     DeleteBulkAction::make(),
+                // ]), não vai ser usado por enquanto
             ]);
     }
 }

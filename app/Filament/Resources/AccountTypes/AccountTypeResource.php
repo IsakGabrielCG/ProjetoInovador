@@ -18,7 +18,7 @@ class AccountTypeResource extends Resource
 {
     protected static ?string $model = AccountType::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::Tag;
 
     protected static ?string $recordTitleAttribute = 'Tipos de conta';
 

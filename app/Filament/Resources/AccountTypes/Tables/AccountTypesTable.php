@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\AccountTypes\Tables;
 
+use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -35,7 +36,10 @@ class AccountTypesTable
                 //
             ])
             ->recordActions([
-                EditAction::make(),
+                ActionGroup::make([
+                    EditAction::make(),
+                ])
+
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
