@@ -2,18 +2,23 @@
 
 namespace App\Filament\Widgets;
 
+use Carbon\Carbon;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\DB;
 
 class AccountsByTypeChart extends ChartWidget
 {
-    protected ?string $heading = 'Gastos por Tipo';
+    protected ?string $heading = 'Gastos por Tipo - Ano Atual';
+
 
     protected function getData(): array
     {
+        $year = now()->year;
 
+        // Consulta apenas o ano atual
         $rows = DB::table('accounts')
             ->join('account_types', 'account_types.id', '=', 'accounts.account_type_id')
+            ->whereYear('due_date', $year)
             ->selectRaw("
                 account_types.name AS type,
                 SUM(CASE WHEN accounts.status = 'em aberto' THEN COALESCE(accounts.amount, 0) ELSE 0 END) AS devido,
@@ -23,11 +28,9 @@ class AccountsByTypeChart extends ChartWidget
             ->orderBy('account_types.name')
             ->get();
 
-        $labels   = $rows->pluck('type')->toArray();
-        $devido   = $rows->pluck('devido')->map(fn ($v) => (float) $v)->toArray();
-        $pago     = $rows->pluck('pago')->map(fn ($v) => (float) $v)->toArray();
-
-
+        $labels = $rows->pluck('type')->toArray();
+        $devido = $rows->pluck('devido')->map(fn ($v) => (float) $v)->toArray();
+        $pago   = $rows->pluck('pago')->map(fn ($v) => (float) $v)->toArray();
 
         return [
             'datasets' => [
@@ -44,6 +47,8 @@ class AccountsByTypeChart extends ChartWidget
                     'data'  => $pago,
                     'barPercentage' => 0.5,
                     'categoryPercentage' => 0.7,
+                    'backgroundColor' => 'rgba(34, 197, 94, 0.2)', // verde
+                    'borderColor' => 'rgba(34, 197, 94, 1)',
                 ],
             ],
             'labels' => $labels,
