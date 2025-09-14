@@ -17,14 +17,13 @@ class AccountsByMonthChart extends ChartWidget
         $this->filter = now()->year;
     }
 
-
     protected function getFilters(): ?array
     {
         $driver = DB::getDriverName();
 
         //para o renderizar o filtro de anos
         if ($driver === 'sqlite') {
-            // SQLite: usar strftime para pegar o ano
+            // SQLite
             $years = DB::table('accounts')
                 ->selectRaw("strftime('%Y', due_date) as year")
                 ->distinct()
@@ -57,7 +56,7 @@ class AccountsByMonthChart extends ChartWidget
         $months = collect(range(1, 12))->map(fn ($m) => Carbon::create($year, $m, 1));
 
         if ($driver === 'sqlite') {
-            // SQLite: usar strftime
+            // SQLite
             $rows = DB::table('accounts')
                 ->selectRaw("strftime('%Y-%m', due_date) as mes, SUM(COALESCE(amount,0)) as total")
                 ->whereRaw("strftime('%Y', due_date) = ?", [$year])
@@ -77,7 +76,6 @@ class AccountsByMonthChart extends ChartWidget
 
         foreach ($months as $month) {
             $key = $month->format('Y-m');
-            // cuidado: translatedFormat depende do ICU/locale do container
             $labels[] = $month->format('m/Y');
             $data[]   = (float) ($rows[$key] ?? 0);
         }
@@ -85,6 +83,7 @@ class AccountsByMonthChart extends ChartWidget
         return [
             'datasets' => [
                 [
+                    'label' => 'Total do Mês',
                     'data'  => $data,
                     'borderColor' => '#3b82f6',
                     'backgroundColor' => 'rgba(59,130,246,0.4)',
