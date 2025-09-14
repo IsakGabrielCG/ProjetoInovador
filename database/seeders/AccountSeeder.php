@@ -27,22 +27,23 @@ class AccountSeeder extends Seeder
 
         $faker = \Faker\Factory::create('pt_BR');
 
-        // Gera 36 meses (últimos 3 anos)
-        $start = Carbon::now()->subMonths(35)->startOfMonth();
+        // Gera 24 meses (últimos 2 anos)
+        $start = Carbon::now()->subMonths(23)->startOfMonth();
 
+        $rows = [];
         $docNumber = 1000;
 
-        for ($i = 0; $i < 36; $i++) {
+        for ($i = 0; $i < 24; $i++) {
             $mes = $start->copy()->addMonths($i);
 
-            // cria de 3 a 6 contas por mês
-            $qtd = rand(3, 6);
+            // cria de 2 a 3 contas por mês
+            $qtd = rand(2, 3);
 
             for ($j = 0; $j < $qtd; $j++) {
                 $status = $faker->randomElement(['paga', 'em aberto']);
                 $amount = $faker->randomFloat(2, 100, 10000);
 
-                $row = [
+                $rows[] = [
                     'document_number'    => 'DEMO-' . str_pad($docNumber++, 5, '0', STR_PAD_LEFT),
                     'name'               => $faker->words(3, true),
                     'amount'             => $amount,
@@ -61,8 +62,10 @@ class AccountSeeder extends Seeder
                     'created_at'         => now(),
                 ];
 
-                DB::table('accounts')->insert($row);
+
             }
         }
+
+        DB::table('accounts')->insert($rows);
     }
 }
