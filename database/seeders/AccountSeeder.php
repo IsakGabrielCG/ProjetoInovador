@@ -68,5 +68,6 @@ class AccountSeeder extends Seeder
         }
 
         DB::table('accounts')->insert($rows);
+        $this->command->info(count($rows) . ' contas criadas com sucesso!');
     }
 }
