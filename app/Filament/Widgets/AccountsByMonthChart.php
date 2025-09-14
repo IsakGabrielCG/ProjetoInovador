@@ -10,6 +10,14 @@ class AccountsByMonthChart extends ChartWidget
 {
     protected ?string $heading = 'Gastos por Mês';
 
+    public ?string $filter = null;
+
+    public function mount(): void
+    {
+        $this->filter = now()->year;
+    }
+
+
     protected function getFilters(): ?array
     {
         $driver = DB::getDriverName();
