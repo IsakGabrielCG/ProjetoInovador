@@ -15,9 +15,10 @@ class AccountSeeder extends Seeder
     public function run(): void
     {
         // Pega as FKs existentes
-        $units   = DB::table('units')->pluck('id', 'name');
-        $types   = DB::table('account_types')->pluck('id', 'name');
-        $methods = DB::table('payment_methods')->pluck('id', 'name');
+        $units   = DB::table('units')->pluck('id');
+        $types   = DB::table('account_types')->pluck('id');
+        $methods = DB::table('payment_methods')->pluck('id');
+
 
         // Se algum estiver vazio, aborta
         if ($units->isEmpty() || $types->isEmpty() || $methods->isEmpty()) {
