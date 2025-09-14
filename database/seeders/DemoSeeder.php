@@ -17,7 +17,7 @@ class DemoSeeder extends Seeder
 
         DB::transaction(function () {
             $this->call([
-                AdminUserSeeder::class,
+                UserSeeder::class,
                 PaymentMethodSeeder::class,
                 AccountTypeSeeder::class,
                 UnitSeeder::class,
