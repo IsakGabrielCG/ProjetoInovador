@@ -16,6 +16,7 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 
 class AccountsTable
@@ -143,13 +144,26 @@ class AccountsTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                SelectFilter::make('status')
+                SelectFilter::make('situacao')
+                    ->label('Situação')
                     ->options([
-                        'em aberto' => 'Em Aberto',
-                        'paga'      => 'Paga',
-                        'cancelada' => 'Cancelada',
+                        'paga'    => 'Pagas',
+                        'aberto'  => 'Em aberto',
+                        'vencida' => 'Vencidas',
                     ])
-                    ->label('Status'),
+                    ->query(function (Builder $query, array $data) {
+                        $value = $data['value'] ?? null;
+                        $today = Carbon::today(config('app.timezone', 'America/Sao_Paulo'));
+
+                        return match ($value) {
+                            'paga'    => $query->where('status', 'paga'),
+                            'aberto'  => $query->where('status', 'em aberto'),
+                            'vencida' => $query->where('status', 'em aberto')
+                                            ->whereDate('due_date', '<', $today),
+                            default   => $query,
+                        };
+                    }),
+
 
                 SelectFilter::make('unit_id')
                     ->relationship('unit', 'name')
