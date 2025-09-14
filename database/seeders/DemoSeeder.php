@@ -19,7 +19,7 @@ class DemoSeeder extends Seeder
                 PaymentMethodSeeder::class,
                 AccountTypeSeeder::class,
                 UnitSeeder::class,
-                //AccountSeeder::class,
+                AccountSeeder::class,
             ]);
         });
     }
