@@ -28,17 +28,17 @@ class AccountSeeder extends Seeder
 
         $faker = \Faker\Factory::create('pt_BR');
 
-        // Gera 24 meses (últimos 2 anos)
-        $start = Carbon::now()->subMonths(23)->startOfMonth();
+        // Gera 36 meses (últimos 3 anos)
+        $start = Carbon::now()->subMonths(35)->startOfMonth();
 
         $rows = [];
         $docNumber = 1000;
 
-        for ($i = 0; $i < 24; $i++) {
+        for ($i = 0; $i < 36; $i++) {
             $mes = $start->copy()->addMonths($i);
 
-            // cria de 2 a 3 contas por mês
-            $qtd = rand(2, 3);
+            // cria de 5 a 8 contas por mês
+            $qtd = rand(5, 8);
 
             for ($j = 0; $j < $qtd; $j++) {
                 $status = $faker->randomElement(['paga', 'em aberto']);
