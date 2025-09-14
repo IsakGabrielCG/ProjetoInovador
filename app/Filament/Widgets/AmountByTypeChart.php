@@ -9,18 +9,27 @@ use Illuminate\Support\Facades\DB;
 
 class AmountByTypeChart extends ChartWidget
 {
-
-    protected ?string $heading = 'Gastos por Unidade'; // coloquei para mudar o nome
+    protected ?string $heading = 'Gastos por Unidade';
 
     private float $total = 0.0;
 
     protected function getFilters(): ?array
     {
-        $months = DB::table('accounts')
-            ->selectRaw("DISTINCT DATE_FORMAT(due_date, '%Y-%m') as ym")
-            ->orderByDesc('ym')
-            ->pluck('ym')
-            ->toArray();
+        $driver = DB::getDriverName();
+
+        if ($driver === 'sqlite') {
+            $months = DB::table('accounts')
+                ->selectRaw("DISTINCT strftime('%Y-%m', due_date) as ym")
+                ->orderByDesc('ym')
+                ->pluck('ym')
+                ->toArray();
+        } else {
+            $months = DB::table('accounts')
+                ->selectRaw("DISTINCT DATE_FORMAT(due_date, '%Y-%m') as ym")
+                ->orderByDesc('ym')
+                ->pluck('ym')
+                ->toArray();
+        }
 
         if (empty($months)) {
             $months = [now()->format('Y-m')];
@@ -29,7 +38,7 @@ class AmountByTypeChart extends ChartWidget
         $options = [];
         foreach ($months as $ym) {
             $c = Carbon::createFromFormat('Y-m', $ym)->startOfMonth();
-            $options[$ym] = $c->translatedFormat('M/Y'); // Exemplo: "Jan/2025"
+            $options[$ym] = $c->format('m/Y'); // usei format p/ evitar locale quebrado no Render
         }
 
         return $options;
@@ -37,14 +46,25 @@ class AmountByTypeChart extends ChartWidget
 
     protected function getData(): array
     {
+        $driver = DB::getDriverName();
         $selectedYm = $this->filter;
 
         if (!$selectedYm) {
-            $selectedYm = DB::table('accounts')
-                ->selectRaw("DATE_FORMAT(due_date, '%Y-%m') as ym")
-                ->orderByDesc('ym')
-                ->limit(1)
-                ->value('ym') ?? now()->format('Y-m');
+            if ($driver === 'sqlite') {
+                $selectedYm = DB::table('accounts')
+                    ->selectRaw("strftime('%Y-%m', due_date) as ym")
+                    ->orderByDesc('ym')
+                    ->limit(1)
+                    ->value('ym');
+            } else {
+                $selectedYm = DB::table('accounts')
+                    ->selectRaw("DATE_FORMAT(due_date, '%Y-%m') as ym")
+                    ->orderByDesc('ym')
+                    ->limit(1)
+                    ->value('ym');
+            }
+
+            $selectedYm = $selectedYm ?? now()->format('Y-m');
         }
 
         $ref   = Carbon::createFromFormat('Y-m', $selectedYm)->startOfMonth();
@@ -60,11 +80,11 @@ class AmountByTypeChart extends ChartWidget
             ->get();
 
         $labels = $units->pluck('name')->toArray();
-        $data   = $units->pluck('total')->map(fn($v) => (float) ($v ?? 0))->toArray();
+        $data   = $units->pluck('total')->map(fn ($v) => (float) ($v ?? 0))->toArray();
 
         $this->total = array_sum($data);
 
-        $this->heading = 'Gastos por Unidade — ' . $ref->translatedFormat('M/Y');
+        $this->heading = 'Gastos por Unidade — ' . $ref->format('m/Y');
 
         return [
             'datasets' => [
@@ -85,7 +105,6 @@ class AmountByTypeChart extends ChartWidget
             'labels' => $labels,
         ];
     }
-
 
     protected function getType(): string
     {

@@ -12,13 +12,26 @@ class AccountsByMonthChart extends ChartWidget
 
     protected function getFilters(): ?array
     {
-        // Busca anos disponíveis no banco
-        $years = DB::table('accounts')
-            ->selectRaw('YEAR(due_date) as year')
-            ->distinct()
-            ->orderByDesc('year')
-            ->pluck('year', 'year')
-            ->toArray();
+        $driver = DB::getDriverName();
+
+        //para o renderizar o filtro de anos
+        if ($driver === 'sqlite') {
+            // SQLite: usar strftime para pegar o ano
+            $years = DB::table('accounts')
+                ->selectRaw("strftime('%Y', due_date) as year")
+                ->distinct()
+                ->orderByDesc('year')
+                ->pluck('year', 'year')
+                ->toArray();
+        } else {
+            // MySQL/MariaDB
+            $years = DB::table('accounts')
+                ->selectRaw('YEAR(due_date) as year')
+                ->distinct()
+                ->orderByDesc('year')
+                ->pluck('year', 'year')
+                ->toArray();
+        }
 
         if (empty($years)) {
             $years = [now()->year => now()->year];
@@ -29,25 +42,35 @@ class AccountsByMonthChart extends ChartWidget
 
     protected function getData(): array
     {
-        // Usa o filtro selecionado ou o ano atual como padrão
         $year = $this->filter ?? now()->year;
+        $driver = DB::getDriverName();
 
-        // Cria os 12 meses fixos do ano escolhido
+        // cria os 12 meses fixos do ano
         $months = collect(range(1, 12))->map(fn ($m) => Carbon::create($year, $m, 1));
 
-        // Busca dados do banco filtrados pelo ano
-        $rows = DB::table('accounts')
-            ->selectRaw("DATE_FORMAT(due_date, '%Y-%m') as mes, SUM(COALESCE(amount,0)) as total")
-            ->whereYear('due_date', $year)
-            ->groupBy('mes')
-            ->pluck('total', 'mes');
+        if ($driver === 'sqlite') {
+            // SQLite: usar strftime
+            $rows = DB::table('accounts')
+                ->selectRaw("strftime('%Y-%m', due_date) as mes, SUM(COALESCE(amount,0)) as total")
+                ->whereRaw("strftime('%Y', due_date) = ?", [$year])
+                ->groupBy('mes')
+                ->pluck('total', 'mes');
+        } else {
+            // MySQL/MariaDB
+            $rows = DB::table('accounts')
+                ->selectRaw("DATE_FORMAT(due_date, '%Y-%m') as mes, SUM(COALESCE(amount,0)) as total")
+                ->whereYear('due_date', $year)
+                ->groupBy('mes')
+                ->pluck('total', 'mes');
+        }
 
         $labels = [];
         $data   = [];
 
         foreach ($months as $month) {
             $key = $month->format('Y-m');
-            $labels[] = $month->translatedFormat('M/Y');
+            // cuidado: translatedFormat depende do ICU/locale do container
+            $labels[] = $month->format('m/Y');
             $data[]   = (float) ($rows[$key] ?? 0);
         }
 
