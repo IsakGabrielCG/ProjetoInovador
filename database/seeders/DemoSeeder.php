@@ -13,9 +13,12 @@ class DemoSeeder extends Seeder
      */
     public function run(): void
     {
+
+        $this->call(AdminUserSeeder::class);
+
         DB::transaction(function () {
             $this->call([
-                AdminUserSeeder::class,
+                //AdminUserSeeder::class,
                 PaymentMethodSeeder::class,
                 AccountTypeSeeder::class,
                 UnitSeeder::class,
