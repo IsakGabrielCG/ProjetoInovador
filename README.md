@@ -13,7 +13,7 @@ Tecnologias utilizadas
 Estrutura geral do projeto
 
 A aplicação segue a estrutura padrão do Laravel e é organizada da seguinte forma:
-
+```
 app/
  ├─ Filament/
  │   ├─ Resources/     → CRUDs e telas administrativas
@@ -25,7 +25,7 @@ database/
  └─ seeders/           → Popular dados de teste (DemoSeeder)
 routes/
  └─ web.php            → Rotas principais (redirect para /admin)
-
+```
 Principais funcionalidades
 
 - Autenticação nativa do Filament (painel /admin);
