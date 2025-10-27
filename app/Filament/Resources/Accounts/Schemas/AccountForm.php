@@ -14,7 +14,7 @@ use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Support\RawJs;
 use App\Helpers\Financeiro;
-
+use Carbon\Carbon;
 
 class AccountForm
 {
@@ -39,12 +39,22 @@ class AccountForm
                         'em aberto' => 'heroicon-o-clock',
                     ])
                     ->default('em aberto')
-                    ->afterStateUpdated(function ($state, $set) {
+                    ->default('em aberto')
+                    ->afterStateUpdated(function (Get $get, Set $set, $state) {
                         if ($state === 'em aberto') {
                             // limpa os campos de pagamento
                             $set('payment_methods_id', null);
                             $set('payment_date', null);
                             $set('amount_paid', null);
+                            return;
+                        }
+
+                        if ($state === 'paga') {
+                            // preenche a data de pagamento se ainda não tiver valor
+                            if (blank($get('payment_date'))) {
+                                $set('payment_date', Carbon::now()->toDateString());
+                                // alternativamente: now()->toDateString()
+                            }
                         }
                     })
                     ->columnSpanFull(),
@@ -143,7 +153,7 @@ class AccountForm
                             ->relationship('paymentMethod', 'name'),
                         DatePicker::make('payment_date')
                             ->displayFormat('d/m/Y')
-                            ->default(now())
+                            ->default(Carbon::now())
                             ->native(false)
                             ->label('Data de Pagamento'),
                         TextInput::make('amount_paid')
@@ -163,7 +173,7 @@ class AccountForm
                             ->prefix('%'),
                         ])
                         ->visible(fn ($get) => $get('status') === 'paga')
-                        ->collapsed(),
+                        ,
 
 
 
