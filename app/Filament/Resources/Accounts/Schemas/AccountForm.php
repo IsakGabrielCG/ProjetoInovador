@@ -138,13 +138,13 @@ class AccountForm
                             ->prefix('%'),
                     ]),
 
-                FileUpload::make('document_path')
-                    ->label('Documento')
-                    ->directory('documents')
-                    ->preserveFilenames()
-                    ->downloadable()
-                    ->openable()
-                    ->required(false),
+                // FileUpload::make('document_path')
+                //     ->label('Documento')
+                //     ->directory('documents')
+                //     ->preserveFilenames()
+                //     ->downloadable()
+                //     ->openable()
+                //     ->required(false),
 
                 Section::make('Informações de pagamento')
                     ->schema([
