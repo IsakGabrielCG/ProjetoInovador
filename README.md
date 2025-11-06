@@ -51,25 +51,29 @@ routes/
 
 ### Passo a Passo
 
-1. **Instalar dependências PHP**
+Primeiro, clone o repositório para sua máquina local
+
+1. **Clonar o repositório**
+
+2. **Instalar dependências PHP**
    ```bash
    composer install
    cp .env.example .env
    php artisan key:generate
    ```
 
-2. **Configurar banco de dados**
+3. **Configurar banco de dados**
    ```bash
    # Edite o arquivo .env com suas credenciais do MySQL
    ```
 
-3. **Executar migrações e seeders**
+4. **Executar migrações e seeders**
    ```bash
    php artisan migrate
    php artisan db:seed --class=DemoSeeder
    ```
 
-4. **Iniciar servidor local**
+5. **Iniciar servidor local**
    ```bash
    php artisan serve
    ```
