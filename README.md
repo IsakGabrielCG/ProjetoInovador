@@ -1,18 +1,21 @@
-Projeto Inovador — Sistema de Contas a Pagar
-Protótipo funcional desenvolvido em Laravel 12.x com Filament 4.x, como parte do Projeto Inovador II (PI2) do curso de Ciência da Computação – UNESC. O sistema demonstra a aplicação de ferramentas do ecossistema Laravel para a criação de painéis administrativos modernos, com foco em produtividade, usabilidade e padronização visual.
-Tecnologias utilizadas
+# Sistema de Contas a Pagar
 
-- PHP 8.4.11
-- Laravel 12.x
-- Filament 4.x
-- Tailwind CSS / Alpine.js / Livewire (TALL Stack)
-- MySQL 8.4.6 (ambiente local)
-- SQLite (deploy Render)
-- Composer 2.8.x e Node.js 20.13.1 / NPM 10.8.2
+> Protótipo funcional desenvolvido em **Laravel 12.x** com **Filament 4.x**, como parte do **Projeto Inovador II (PI2)** do curso de **Ciência da Computação – UNESC**.
 
-Estrutura geral do projeto
+Sistema demonstra a aplicação de ferramentas do ecossistema Laravel para criação de painéis administrativos modernos, com foco em **produtividade, usabilidade e padronização visual**.
 
-A aplicação segue a estrutura padrão do Laravel e é organizada da seguinte forma:
+## 🚀 Tecnologias Utilizadas
+
+- **PHP** 8.4.11
+- **Laravel** 12.x
+- **Filament** 4.x
+- **TALL Stack** (Tailwind CSS, Alpine.js, Livewire)
+- **MySQL** 8.4.6 (ambiente local)
+- **Composer** 2.8.x
+- **Node.js** 20.13.1 / **NPM** 10.8.2
+
+## 📁 Estrutura do Projeto
+
 ```
 app/
  ├─ Filament/
@@ -26,54 +29,78 @@ database/
 routes/
  └─ web.php            → Rotas principais (redirect para /admin)
 ```
-Principais funcionalidades
 
-- Autenticação nativa do Filament (painel /admin);
-- Controle de usuários com papéis (roles);
-- CRUDs automáticos com Eloquent ORM e Resources;
-- Gráficos integrados (widgets) com Chart.js;
-- Filtros, busca e ordenação em tabelas;
-- Alternância de tema (claro/escuro/automático);
-- Classe auxiliar Financeiro para cálculo de multas e juros.
+## ⚡ Funcionalidades
 
-Configuração e execução local
+- ✅ **Autenticação** nativa do Filament (painel `/admin`)
+- ✅ **Controle de usuários** com papéis: administrador e usuário padrão
+- ✅ **CRUDs automáticos** com Eloquent ORM e Resources
+- ✅ **Gráficos integrados** (widgets) com Chart.js
+- ✅ **Filtros, busca e ordenação** em tabelas
+- ✅ **Alternância de tema** (claro, escuro e automático)
+- ✅ **Cálculo de multas e juros** via classe `Financeiro`
+- ✅ **Responsividade** e consistência visual
 
-1. Pré-requisitos:
-   - PHP 8.2+
-   - Composer 2.6+
-   - Node.js 18+
-   - MySQL 8+ (ou SQLite)
+## 🛠️ Instalação e Configuração
 
+### Pré-requisitos
+- PHP 8.2+
+- Composer 2.6+
+- Node.js 18+
+- MySQL 8+ (ou compatível)
 
-2. Instalação:
-   - Clonar o projeto e acessar a pasta
-   - Criar o arquivo de ambiente (.env) a partir do modelo
-   - Instalar dependências PHP e JS
-   - Gerar chave da aplicação
+### Passo a Passo
 
+Primeiro, clone o repositório para sua máquina local
 
-3. Configuração do banco de dados (MySQL local):
-   DB_CONNECTION=mysql
-   DB_HOST=127.0.0.1
-   DB_PORT=3306
-   DB_DATABASE=pi1
-   DB_USERNAME=root
-   DB_PASSWORD=
+1. **Clonar o repositório**
 
+2. **Instalar dependências PHP**
+   ```bash
+   composer install
+   cp .env.example .env
+   php artisan key:generate
+   ```
 
-4. Executar migrations e seeders:
+3. **Configurar banco de dados**
+   ```bash
+   # Edite o arquivo .env com suas credenciais do MySQL
+   ```
+
+4. **Executar migrações e seeders**
+   ```bash
    php artisan migrate
    php artisan db:seed --class=DemoSeeder
+   ```
 
-
-5. Iniciar o servidor local:
+5. **Iniciar servidor local**
+   ```bash
    php artisan serve
+   ```
    Acesse: http://localhost:8000/admin
 
-Observação: o uso de Docker foi aplicado apenas no ambiente de deploy (Render), para simplificar a execução em nuvem. Para ambiente local, utilize PHP e Composer nativos.
-Autor
-Isak Gabriel Chedid Girardello
-Curso de Ciência da Computação – UNESC
+## 👥 Credenciais de Acesso
+
+A seeder cria automaticamente dois usuários para teste:
+
+**Administrador:**
+- Email: `admin@gmail.com`
+- Senha: `12345678`
+
+**Usuário Padrão:**
+- Email: `user@gmail.com`
+- Senha: `12345678`
+
+## 📝 Observações
+
+> **Nota:** O uso de Docker foi aplicado apenas no ambiente de deploy (Render), para simplificar a execução em nuvem. Para ambiente local, utilize PHP e Composer nativos.
+
+## 👨‍💻 Autor
+
+**Isak Gabriel Chedid Girardello**  
+Curso de Ciência da Computação – UNESC  
 Orientador: Prof. Rogério Antônio Casagrande
-Licença
+
+## 📄 Licença
+
 Este projeto foi desenvolvido exclusivamente para fins acadêmicos, sem fins comerciais.
