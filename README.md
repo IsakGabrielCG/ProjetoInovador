@@ -51,29 +51,44 @@ routes/
 
 ### Passo a Passo
 
-Primeiro, clone o repositório para sua máquina local
-
 1. **Clonar o repositório**
+   ```bash
+   git clone https://github.com/seu-usuario/sistema-contas-pagar.git
+   cd sistema-contas-pagar
+   ```
 
 2. **Instalar dependências PHP**
    ```bash
    composer install
+   ```
+
+3. **Instalar dependências Node.js e compilar assets**
+   ```bash
+   npm install
+   ```
+
+4. **Configurar ambiente**
+   ```bash
    cp .env.example .env
    php artisan key:generate
    ```
 
-3. **Configurar banco de dados**
+5. **Configurar banco de dados**
    ```bash
-   # Edite o arquivo .env com suas credenciais do MySQL
+   # Crie um banco de dados MySQL chamado 'contas_pagar'
+   # Edite o arquivo .env com suas credenciais do MySQL:
+   # DB_DATABASE=contas_pagar
+   # DB_USERNAME=seu_usuario
+   # DB_PASSWORD=sua_senha
    ```
 
-4. **Executar migrações e seeders**
+6. **Executar migrações e seeders**
    ```bash
    php artisan migrate
    php artisan db:seed --class=DemoSeeder
    ```
 
-5. **Iniciar servidor local**
+7. **Iniciar servidor local**
    ```bash
    php artisan serve
    ```
