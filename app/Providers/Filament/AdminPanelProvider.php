@@ -28,6 +28,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->globalSearch(false) // Disable global search
             ->colors([
                 'primary' => Color::Amber,
             ])
