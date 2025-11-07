@@ -53,7 +53,7 @@ routes/
 
 1. **Clonar o repositório**
    ```bash
-   git clone https://github.com/seu-usuario/sistema-contas-pagar.git
+   git clone https://github.com/IsakGabrielCG/ProjetoInovador.git
    cd sistema-contas-pagar
    ```
 
